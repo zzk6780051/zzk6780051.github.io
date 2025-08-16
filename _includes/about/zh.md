@@ -8,6 +8,8 @@ Hey，我是黄玄（a.k.a. Hux, _@huxpro_），一个略懂计算机科学与�
 
 ##### 技术演讲
 
+- [我的大前端世界观][20] · [FEDAY](https://fequan.com/2023/) · 2023
+- [前端已死，前端永生][21] · [掘金年度技术演讲](https://juejin.cn/meetings/talk2023) · 2023
 - [React 国情咨文 2022][13] · 第七届中国开源年会 · 2023
 - [React Labs: What We've Been Working On – June 2022][12] · React Blog
 - [React Without Memo][11] · [React Conf 2021](https://conf.reactjs.org/)
@@ -55,3 +57,5 @@ Hey，我是黄玄（a.k.a. Hux, _@huxpro_），一个略懂计算机科学与�
 [17]: https://www.zhihu.com/zvideo/1542577108190068737?page=ogv
 [18]: https://segmentfault.com/a/1190000043208486
 [19]: https://juejin.cn/post/6844903750155419655
+[20]: https://www.bilibili.com/video/BV1SC4y1c7ju/
+[21]: https://www.bilibili.com/video/BV1uz421d7Ch/
