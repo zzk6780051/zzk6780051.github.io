@@ -144,7 +144,7 @@ HTML 文件中有标签并不意味着这些标签就能立刻被绘制到屏幕
 
 ![](/img/in-post/post-eleme-pwa/nextTick-&-Load.png)
 
-当当！首次渲染瞬间就被提前了。如果你熟悉浏览器的**事件循环模型（event loop）**的话，这招 Hack 其实是通过 setTimeout 的回调把 DOM 操作放到了事件循环的任务队列中以避免它在当前循环执行，这样浏览器就得以在主线程空闲时喘息一下（更新一下渲染）了。如果你想亲手试试 MMPWA 的话，你可以访问 [github.com/Huxpro/mmpwa](https://github.com/Huxpro/mmpwa) 或 [huangxuan.me/mmpwa/](https://huangxuan.me/mmpwa) 访问代码与 Demo。我把 UI 设计为了 A/B Test 的形式并改为渲染 5000 个列表项来让效果更夸张一些。
+当当！首次渲染瞬间就被提前了。如果你熟悉浏览器的**事件循环模型（event loop）**的话，这招 Hack 其实是通过 setTimeout 的回调把 DOM 操作放到了事件循环的任务队列中以避免它在当前循环执行，这样浏览器就得以在主线程空闲时喘息一下（更新一下渲染）了。如果你想亲手试试 MMPWA 的话，你可以访问 [github.com/zzk6780051/mmpwa](https://github.com/zzk6780051/mmpwa) 或 [6780051.xyz/mmpwa/](https://6780051.xyz/mmpwa) 访问代码与 Demo。我把 UI 设计为了 A/B Test 的形式并改为渲染 5000 个列表项来让效果更夸张一些。
 
 回到饿了么 PWA 上，我们同样试着把 `new Vue()` 放到了 `setTimeout` 中。果然，黑魔法再次显灵，骨架屏在每次跳转后都能立刻被渲染。这时的 Profile 看起来是这样的：
 
@@ -157,7 +157,7 @@ HTML 文件中有标签并不意味着这些标签就能立刻被绘制到屏幕
 
 不知道你发现没有，在上图的 Profile 中，我们仍然有不少脚本是阻塞了 HTML 解析的。好吧让我解释一下，由于历史原因，我们确实保留了一部分的阻塞脚本，比如侵入性很强的 [lib-flexible](https://github.com/amfe/lib-flexible)，我们没法轻易去除它。不过，profile 里的大部分阻塞脚本实际上都设置了 `defer`，我们本以为他们应该在 HTML 解析完成之后才被执行，结果被 profile 打了一脸。
 
-我和 [Jake Archibald](https://twitter.com/jaffathecake) [聊了一下](https://twitter.com/Huxpro/status/859842124849827841)，果然这是 Chrome 的 Bug：`defer` 的脚本被完全缓存时，并没有遵守规范等待解析结束，反而阻塞了解析与渲染。Jake 已经提交在 [crbug](https://bugs.chromium.org/p/chromium/issues/detail?id=717979) 上了，一起给它投票吧~
+我和 [Jake Archibald](https://twitter.com/jaffathecake) [聊了一下](https://twitter.com/zzk6780051/status/859842124849827841)，果然这是 Chrome 的 Bug：`defer` 的脚本被完全缓存时，并没有遵守规范等待解析结束，反而阻塞了解析与渲染。Jake 已经提交在 [crbug](https://bugs.chromium.org/p/chromium/issues/detail?id=717979) 上了，一起给它投票吧~
 
 最后，是优化后的 Lighthouse 跑分结果，同样可以看到明显的性能提升。需要说明的是，能影响 Lighthouse 跑分的因素有很多，所以我建议你以控制变量（跑分用的设备、跑分时的网络环境等）的方式来进行对照实验。
 
@@ -201,7 +201,7 @@ PWA 作为[下一代 Web 应用模型](https://zhuanlan.zhihu.com/p/25167289)，
 [8]: https://calendar.perfplanet.com/2013/big-bad-preloader/
 [9]: https://w3c.github.io/ServiceWorker/v1/
 [10]: https://webpack.github.io/
-[11]: https://medium.com/@Huxpro/how-does-sw-precache-works-2d99c3d3c725
+[11]: https://medium.com/@zzk6780051/how-does-sw-precache-works-2d99c3d3c725
 [12]: https://developers.google.com/web/updates/2015/11/app-shell
 [13]: https://googlechrome.github.io/sw-toolbox/
 

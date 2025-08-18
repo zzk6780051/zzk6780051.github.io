@@ -58,8 +58,8 @@ SEOTitle: Hux Blog          # check out docs for more detail
 description: "Cool Blog"    # ...
 
 # SNS settings      
-github_username: huxpro     # modify this account to yours
-weibo_username: huxpro      # the footer woule be auto-updated.
+github_username: zzk6780051     # modify this account to yours
+weibo_username: zzk6780051      # the footer woule be auto-updated.
 
 # Build settings
 paginate: 10                # nums of posts in one page
@@ -74,7 +74,7 @@ Most of them are very descriptive so feel brave to dive into code directly as we
 Posts are simply just Markdown files in the `_posts/`. 
 Metadata of posts are listed in a YAML style _front-matter_.
 
-For instance, [Hello 2015])(https://huangxuan.me/2015/01/29/hello-2015/) has the front-matter of this:
+For instance, [Hello 2015])(https://6780051.xyz/2015/01/29/hello-2015/) has the front-matter of this:
 
 ```yml
 ---
@@ -103,7 +103,7 @@ This command will automatially generate a sample post similar as above under the
 
 There are a bunch of _advanced_ configs:
 
-1. a _text style_ header like [this](https://huangxuan.me/2019/09/08/spacemacs-workflow/) with
+1. a _text style_ header like [this](https://6780051.xyz/2019/09/08/spacemacs-workflow/) with
 
 ```yml
 header-style: text 
@@ -273,7 +273,7 @@ Releases
 
 #### V1.8
 
-- Brand new [Archive](https://huangxuan.me/archive/) page! It combines previous Archive and Tag page and it's backward-cmpatible.
+- Brand new [Archive](https://6780051.xyz/archive/) page! It combines previous Archive and Tag page and it's backward-cmpatible.
 Shout out to [@kitian616/jekyll-TeXt-theme](https://github.com/kitian616/jekyll-TeXt-theme) of bringing this idea. 
 - Improve engineering by extracting duplicated liquid templates into reuseable includes. This was proposed in #74 by @Kaijun but postponed for entirely 2.5 years! I wasn't able to merge his PR directly because of long-time divegence but the credit is belonging to @Kaijun.
 - Improved code block. Long-wanted line number are supported out of the box (thanks for @SmilingParadise's help from Sina Weibo), the default theme is updated to Atom One Dark as well (checkout FQA for how to change to your farovite theme)
@@ -294,7 +294,7 @@ Shout out to [@kitian616/jekyll-TeXt-theme](https://github.com/kitian616/jekyll-
 
 - Feeling annoyed to delete my blog post after clone or pull? Try **Boilerplate (Beta)** to help you get started quickly and easily merge update.
 - `-apple-system` is added in font rule, which display beautiful new font **San Francisco** in iOS 9 by default.
-- Fixed [issue#15](https://github.com/Huxpro/huxpro.github.io/issues/15) about code wrap.
+- Fixed [issue#15](https://github.com/zzk6780051/zzk6780051.github.io/issues/15) about code wrap.
 
 #### V1.5.1
 

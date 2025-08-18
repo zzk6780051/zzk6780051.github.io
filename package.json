@@ -3,12 +3,12 @@
     "title": "China_zzk Blog",
     "author": "s23908940086@qq.com>",
     "version": "1.8.2",
-    "homepage": "http://zzk6780051.us.kg",
+    "homepage": "http://6780051.xyz",
     "repository": {
         "type": "git",
-        "url": "https://github.com/zzk6780051/zzk6780051.us.kg"
+        "url": "https://github.com/zzk6780051/6780051.xyz"
     },
-    "bugs": "https://github.com/zzk6780051/zzk6780051.us.kg/issues",
+    "bugs": "https://github.com/zzk6780051/6780051.xyz/issues",
     "devDependencies": {
         "grunt": ">=1.3.0",
         "grunt-banner": "~0.2.3",

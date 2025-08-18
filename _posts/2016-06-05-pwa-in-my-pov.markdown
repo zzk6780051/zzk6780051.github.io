@@ -15,7 +15,7 @@ tags:
 
 > 下滑这里查看更多内容
 
-### [Watching Fullscreen →](https://huangxuan.me/pwa-in-my-pov/)
+### [Watching Fullscreen →](https://6780051.xyz/pwa-in-my-pov/)
 
 <div class="visible-md visible-lg">
     <img src="//huangxuan.me/pwa-in-my-pov/attach/qrcode.png" width="350" />
