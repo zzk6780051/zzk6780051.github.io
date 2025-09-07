@@ -729,9 +729,8 @@
         // 从API获取文章数据
         async function loadPosts() {
             try {
-                // 这里应该替换为您的文章API端点
-                // 可以使用GitHub API获取仓库中的文章
-                const response = await fetch('https://api.example.com/posts');
+                // 使用Worker端点获取文章数据
+                const response = await fetch('https://blog.china-zzk.workers.dev/posts');
                 const posts = await response.json();
                 
                 const postsContainer = document.getElementById('postsContainer');
@@ -770,9 +769,8 @@
         // 获取访问计数
         async function updateVisitCount() {
             try {
-                // 这里应该替换为您的Cloudflare Worker端点
-                const workerURL = 'https://your-worker.your-account.workers.dev';
-                const response = await fetch(workerURL);
+                // 使用Worker端点获取访问计数
+                const response = await fetch('https://blog.china-zzk.workers.dev/counter');
                 const data = await response.json();
                 document.getElementById('visit-count').textContent = data.count.toLocaleString();
             } catch (error) {
@@ -788,8 +786,8 @@
             const email = formData.get('email');
             
             try {
-                // 这里应该替换为您的表单处理Worker端点
-                const response = await fetch('https://your-worker.your-account.workers.dev/subscribe', {
+                // 使用Worker端点处理订阅
+                const response = await fetch('https://blog.china-zzk.workers.dev/subscribe', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
