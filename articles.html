@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文章列表 | 我的云博客</title>
-    <meta name="description" content="浏览所有文章">
+    <title>文章详情 | 我的云博客</title>
+    <meta name="description" content="阅读完整文章">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=PT+Serif:ital@0;1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/articles.css">
+    <link rel="stylesheet" href="css/article.css">
 </head>
 <body>
     <header>
@@ -21,7 +21,7 @@
                 
                 <ul class="nav-links" id="navLinks">
                     <li><a href="index.html">首页</a></li>
-                    <li><a href="articles.html" class="active">文章</a></li>
+                    <li><a href="articles.html">文章</a></li>
                     <li><a href="categories.html">分类</a></li>
                     <li><a href="about.html">关于</a></li>
                     <li><a href="contact.html">联系</a></li>
@@ -39,46 +39,37 @@
         </div>
     </header>
 
-    <section class="articles-header">
+    <main class="article-container">
         <div class="container">
-            <h1>所有文章</h1>
-            <p>探索所有精彩内容</p>
-        </div>
-    </section>
-
-    <section class="articles-list">
-        <div class="container">
-            <div class="filter-bar">
-                <div class="filter-group">
-                    <label for="category-filter">分类:</label>
-                    <select id="category-filter">
-                        <option value="all">全部</option>
-                        <option value="technology">技术</option>
-                        <option value="design">设计</option>
-                        <option value="travel">旅行</option>
-                        <option value="photography">摄影</option>
-                        <option value="life">生活</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="sort-filter">排序:</label>
-                    <select id="sort-filter">
-                        <option value="newest">最新</option>
-                        <option value="oldest">最旧</option>
-                        <option value="popular">最受欢迎</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="articles-grid" id="articlesContainer">
+            <div id="articleContent">
                 <div class="loader"></div>
+                <p>加载中...</p>
             </div>
 
-            <div class="pagination" id="pagination">
-                <!-- 分页控件 -->
-            </div>
+            <section class="comments-section">
+                <h2>评论</h2>
+                <div id="commentsList">
+                    <div class="loader"></div>
+                    <p>加载评论中...</p>
+                </div>
+                
+                <div class="comment-form">
+                    <h3>发表评论</h3>
+                    <form id="commentForm">
+                        <div class="form-group">
+                            <label for="commentAuthor">姓名</label>
+                            <input type="text" id="commentAuthor" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="commentContent">评论内容</label>
+                            <textarea id="commentContent" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">提交评论</button>
+                    </form>
+                </div>
+            </section>
         </div>
-    </section>
+    </main>
 
     <footer>
         <!-- 页脚（与首页相同） -->
@@ -87,6 +78,6 @@
     <div class="toast" id="toast"></div>
 
     <script src="js/common.js"></script>
-    <script src="js/articles.js"></script>
+    <script src="js/article.js"></script>
 </body>
 </html>

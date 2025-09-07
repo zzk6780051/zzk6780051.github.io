@@ -145,3 +145,99 @@ async function updateVisitCount() {
 document.addEventListener('DOMContentLoaded', () => {
     updateVisitCount();
 });
+
+// 搜索功能
+function initSearch() {
+    const searchContainer = document.createElement('div');
+    searchContainer.className = 'search-container';
+    searchContainer.innerHTML = `
+        <input type="text" class="search-input" placeholder="搜索文章..." id="searchInput">
+        <button class="search-button" id="searchButton">
+            <i class="fas fa-search"></i>
+        </button>
+        <div class="search-results" id="searchResults"></div>
+    `;
+    
+    // 将搜索框添加到导航栏
+    const navActions = document.querySelector('.nav-actions');
+    if (navActions) {
+        navActions.parentNode.insertBefore(searchContainer, navActions);
+    }
+    
+    // 搜索功能
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    let searchTimeout;
+    
+    searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        const query = searchInput.value.trim();
+        
+        if (query.length < 2) {
+            searchResults.classList.remove('active');
+            return;
+        }
+        
+        searchTimeout = setTimeout(() => {
+            performSearch(query);
+        }, 300);
+    });
+    
+    searchInput.addEventListener('focus', () => {
+        const query = searchInput.value.trim();
+        if (query.length >= 2 && searchResults.innerHTML !== '') {
+            searchResults.classList.add('active');
+        }
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!searchContainer.contains(e.target)) {
+            searchResults.classList.remove('active');
+        }
+    });
+}
+
+// 执行搜索
+async function performSearch(query) {
+    try {
+        const response = await fetch(`https://blog.china-zzk.workers.dev/search?q=${encodeURIComponent(query)}`);
+        
+        if (!response.ok) {
+            throw new Error('搜索失败');
+        }
+        
+        const results = await response.json();
+        const searchResults = document.getElementById('searchResults');
+        
+        if (results.length === 0) {
+            searchResults.innerHTML = '<div class="search-result-item">没有找到相关文章</div>';
+        } else {
+            searchResults.innerHTML = results.map(post => `
+                <div class="search-result-item" data-id="${post.id}">
+                    <div class="search-result-title">${post.title}</div>
+                    <div class="search-result-excerpt">${post.excerpt}</div>
+                </div>
+            `).join('');
+            
+            // 添加点击事件
+            document.querySelectorAll('.search-result-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const postId = item.getAttribute('data-id');
+                    window.location.href = `article.html?id=${postId}`;
+                });
+            });
+        }
+        
+        searchResults.classList.add('active');
+    } catch (error) {
+        console.error('搜索失败:', error);
+        const searchResults = document.getElementById('searchResults');
+        searchResults.innerHTML = '<div class="search-result-item">搜索失败，请稍后再试</div>';
+        searchResults.classList.add('active');
+    }
+}
+
+// 在DOM加载完成后初始化搜索
+document.addEventListener('DOMContentLoaded', () => {
+    initSearch();
+});

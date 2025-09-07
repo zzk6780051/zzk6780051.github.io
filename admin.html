@@ -345,6 +345,13 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--glass);
+            padding-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
         }
 
         .modal-close {
@@ -398,6 +405,36 @@
             gap: 0.5rem;
         }
 
+        /* 统计信息 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px var(--shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
         /* 响应式设计 */
         @media (max-width: 768px) {
             .nav-links {
@@ -432,6 +469,16 @@
             
             .action-buttons {
                 flex-direction: column;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -495,6 +542,26 @@
                 <p>发布、编辑和删除文章</p>
             </div>
 
+            <!-- 统计信息 -->
+            <div class="stats-grid" id="statsContainer">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPosts">0</div>
+                    <div class="stat-label">文章总数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalSubscribers">0</div>
+                    <div class="stat-label">订阅用户</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalViews">0</div>
+                    <div class="stat-label">总访问量</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalContacts">0</div>
+                    <div class="stat-label">联系消息</div>
+                </div>
+            </div>
+
             <!-- GitHub Token 设置 -->
             <div class="github-settings">
                 <h3><i class="fab fa-github"></i> GitHub 设置</h3>
@@ -514,6 +581,12 @@
                 </button>
                 <button id="refreshBtn" class="btn btn-secondary">
                     <i class="fas fa-sync-alt"></i> 刷新文章
+                </button>
+                <button id="viewSubscribersBtn" class="btn btn-secondary">
+                    <i class="fas fa-users"></i> 查看订阅者
+                </button>
+                <button id="viewContactsBtn" class="btn btn-secondary">
+                    <i class="fas fa-envelope"></i> 查看联系消息
                 </button>
                 <button id="logoutBtn" class="btn btn-secondary">
                     <i class="fas fa-sign-out-alt"></i> 退出登录
@@ -598,7 +671,7 @@
     <div id="deleteModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>确认删除</h3>
+                <h3 class="modal-title">确认删除</h3>
                 <button class="modal-close">&times;</button>
             </div>
             <p>您确定要删除这篇文章吗？此操作不可撤销。</p>
@@ -613,7 +686,7 @@
     <div id="tokenModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>更新 GitHub Token</h3>
+                <h3 class="modal-title">更新 GitHub Token</h3>
                 <button class="modal-close">&times;</button>
             </div>
             <div class="form-group">
@@ -624,6 +697,44 @@
             <div class="form-group" style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
                 <button id="saveToken" class="btn btn-primary">保存</button>
                 <button id="cancelToken" class="btn btn-secondary">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 订阅者列表模态框 -->
+    <div id="subscribersModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">订阅者列表</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="form-group">
+                <div id="subscribersList">
+                    <div class="loader"></div>
+                    <p>加载中...</p>
+                </div>
+            </div>
+            <div class="form-group" style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
+                <button id="closeSubscribers" class="btn btn-secondary">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 联系消息模态框 -->
+    <div id="contactsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">联系消息</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="form-group">
+                <div id="contactsList">
+                    <div class="loader"></div>
+                    <p>加载中...</p>
+                </div>
+            </div>
+            <div class="form-group" style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
+                <button id="closeContacts" class="btn btn-secondary">关闭</button>
             </div>
         </div>
     </div>
@@ -649,42 +760,28 @@
         const deleteModal = document.getElementById('deleteModal');
         const confirmDelete = document.getElementById('confirmDelete');
         const cancelDelete = document.getElementById('cancelDelete');
-        const modalClose = document.querySelector('.modal-close');
+        const modalCloseButtons = document.querySelectorAll('.modal-close');
         const updateTokenBtn = document.getElementById('updateTokenBtn');
         const currentGithubToken = document.getElementById('currentGithubToken');
         const tokenModal = document.getElementById('tokenModal');
         const saveToken = document.getElementById('saveToken');
         const cancelToken = document.getElementById('cancelToken');
         const newGithubToken = document.getElementById('newGithubToken');
+        const viewSubscribersBtn = document.getElementById('viewSubscribersBtn');
+        const viewContactsBtn = document.getElementById('viewContactsBtn');
+        const subscribersModal = document.getElementById('subscribersModal');
+        const contactsModal = document.getElementById('contactsModal');
+        const closeSubscribers = document.getElementById('closeSubscribers');
+        const closeContacts = document.getElementById('closeContacts');
+        const subscribersList = document.getElementById('subscribersList');
+        const contactsList = document.getElementById('contactsList');
+        const totalPosts = document.getElementById('totalPosts');
+        const totalSubscribers = document.getElementById('totalSubscribers');
+        const totalViews = document.getElementById('totalViews');
+        const totalContacts = document.getElementById('totalContacts');
 
         // 当前选中的文章ID（用于编辑和删除）
         let currentPostId = null;
-
-        // 修复btoa()函数对UTF-8字符的支持
-        function utf8ToBase64(str) {
-            try {
-                // 方法1: 使用encodeURIComponent + btoa
-                return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
-                    return String.fromCharCode('0x' + p1);
-                }));
-            } catch (e) {
-                try {
-                    // 方法2: 使用TextEncoder
-                    const encoder = new TextEncoder();
-                    const bytes = encoder.encode(str);
-                    let binary = '';
-                    const len = bytes.byteLength;
-                    for (let i = 0; i < len; i++) {
-                        binary += String.fromCharCode(bytes[i]);
-                    }
-                    return btoa(binary);
-                } catch (e) {
-                    // 方法3: 如果以上方法都失败，使用简单的btoa
-                    console.warn('UTF-8编码失败，使用标准btoa，可能丢失特殊字符:', e);
-                    return btoa(str);
-                }
-            }
-        }
 
         // 检查登录状态
         function checkLoginStatus() {
@@ -692,6 +789,7 @@
             if (isLoggedIn) {
                 showAdminPanel();
                 loadPosts();
+                loadStats();
             } else {
                 showLoginForm();
             }
@@ -737,6 +835,48 @@
         // 隐藏文章编辑器
         function hidePostEditor() {
             postEditor.style.display = 'none';
+        }
+
+        // 加载统计信息
+        async function loadStats() {
+            try {
+                const token = localStorage.getItem('githubToken');
+                const headers = {};
+                
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
+                // 获取文章数量
+                const postsResponse = await fetch(`${API_BASE_URL}/posts`, { headers });
+                if (postsResponse.ok) {
+                    const posts = await postsResponse.json();
+                    totalPosts.textContent = posts.length;
+                }
+                
+                // 获取订阅者数量
+                const subscribersResponse = await fetch(`${API_BASE_URL}/subscribers/count`, { headers });
+                if (subscribersResponse.ok) {
+                    const data = await subscribersResponse.json();
+                    totalSubscribers.textContent = data.count;
+                }
+                
+                // 获取访问量
+                const counterResponse = await fetch(`${API_BASE_URL}/counter`, { headers });
+                if (counterResponse.ok) {
+                    const data = await counterResponse.json();
+                    totalViews.textContent = data.count;
+                }
+                
+                // 获取联系消息数量
+                const contactsResponse = await fetch(`${API_BASE_URL}/contacts/count`, { headers });
+                if (contactsResponse.ok) {
+                    const data = await contactsResponse.json();
+                    totalContacts.textContent = data.count;
+                }
+            } catch (error) {
+                console.error('加载统计信息失败:', error);
+            }
         }
 
         // 加载文章列表
@@ -845,6 +985,120 @@
             tokenModal.style.display = 'none';
         }
 
+        // 显示订阅者模态框
+        async function showSubscribersModal() {
+            subscribersModal.style.display = 'flex';
+            subscribersList.innerHTML = `
+                <div class="loader"></div>
+                <p>加载中...</p>
+            `;
+            
+            try {
+                const token = localStorage.getItem('githubToken');
+                const headers = {};
+                
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
+                const response = await fetch(`${API_BASE_URL}/subscribers`, { headers });
+                
+                if (!response.ok) {
+                    throw new Error('获取订阅者失败');
+                }
+                
+                const subscribers = await response.json();
+                
+                if (subscribers.length === 0) {
+                    subscribersList.innerHTML = '<p>暂无订阅者</p>';
+                    return;
+                }
+                
+                subscribersList.innerHTML = `
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--glass);">邮箱</th>
+                                    <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--glass);">订阅时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${subscribers.map(sub => `
+                                    <tr>
+                                        <td style="padding: 0.5rem; border-bottom: 1px solid var(--glass);">${sub.email}</td>
+                                        <td style="padding: 0.5rem; border-bottom: 1px solid var(--glass);">${new Date(parseInt(sub.key)).toLocaleDateString()}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('加载订阅者失败:', error);
+                subscribersList.innerHTML = '<p style="color: var(--error);">加载订阅者失败</p>';
+            }
+        }
+
+        // 显示联系消息模态框
+        async function showContactsModal() {
+            contactsModal.style.display = 'flex';
+            contactsList.innerHTML = `
+                <div class="loader"></div>
+                <p>加载中...</p>
+            `;
+            
+            try {
+                const token = localStorage.getItem('githubToken');
+                const headers = {};
+                
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
+                const response = await fetch(`${API_BASE_URL}/contacts`, { headers });
+                
+                if (!response.ok) {
+                    throw new Error('获取联系消息失败');
+                }
+                
+                const contacts = await response.json();
+                
+                if (contacts.length === 0) {
+                    contactsList.innerHTML = '<p>暂无联系消息</p>';
+                    return;
+                }
+                
+                contactsList.innerHTML = `
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        ${contacts.map(contact => `
+                            <div style="padding: 1rem; border-bottom: 1px solid var(--glass);">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <strong>${contact.name} (${contact.email})</strong>
+                                    <span style="color: var(--text-light); font-size: 0.8rem;">${new Date(contact.timestamp).toLocaleDateString()}</span>
+                                </div>
+                                <div style="margin-bottom: 0.5rem;"><strong>主题:</strong> ${contact.subject}</div>
+                                <div><strong>消息:</strong> ${contact.message}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                console.error('加载联系消息失败:', error);
+                contactsList.innerHTML = '<p style="color: var(--error);">加载联系消息失败</p>';
+            }
+        }
+
+        // 隐藏订阅者模态框
+        function hideSubscribersModal() {
+            subscribersModal.style.display = 'none';
+        }
+
+        // 隐藏联系消息模态框
+        function hideContactsModal() {
+            contactsModal.style.display = 'none';
+        }
+
         // 删除文章
         async function deletePost(postId) {
             try {
@@ -866,6 +1120,7 @@
                 }
                 
                 await loadPosts();
+                await loadStats();
                 showToast('文章已成功删除');
             } catch (error) {
                 console.error('删除文章失败:', error);
@@ -901,6 +1156,7 @@
                     localStorage.setItem('isLoggedIn', 'true');
                     showAdminPanel();
                     loadPosts();
+                    loadStats();
                     showToast('登录成功');
                 } else {
                     showToast('用户名或密码错误', true);
@@ -910,6 +1166,7 @@
             // 退出登录按钮点击事件
             logoutBtn.addEventListener('click', () => {
                 localStorage.setItem('isLoggedIn', 'false');
+                localStorage.removeItem('githubToken');
                 showLoginForm();
                 showToast('已退出登录');
             });
@@ -922,7 +1179,18 @@
             // 刷新文章按钮点击事件
             refreshBtn.addEventListener('click', () => {
                 loadPosts();
+                loadStats();
                 showToast('文章列表已刷新');
+            });
+
+            // 查看订阅者按钮点击事件
+            viewSubscribersBtn.addEventListener('click', () => {
+                showSubscribersModal();
+            });
+
+            // 查看联系消息按钮点击事件
+            viewContactsBtn.addEventListener('click', () => {
+                showContactsModal();
             });
 
             // 取消编辑按钮点击事件
@@ -952,7 +1220,7 @@
                         category,
                         image: image || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
                         author,
-                        authorAvatar: authorAvatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1160&q=80',
+                        authorAvatar: authorAvatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwa90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1160&q=80',
                         date: new Date().toLocaleDateString('zh-CN'),
                         readTime: `${Math.ceil(content.length / 500)}分钟阅读`
                     };
@@ -982,6 +1250,7 @@
                     
                     hidePostEditor();
                     await loadPosts();
+                    await loadStats();
                     showToast(postId ? '文章已更新' : '文章已发布');
                 } catch (error) {
                     console.error('保存文章失败:', error);
@@ -1001,7 +1270,14 @@
             cancelDelete.addEventListener('click', hideDeleteModal);
             
             // 关闭模态框按钮点击事件
-            modalClose.addEventListener('click', hideDeleteModal);
+            modalCloseButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    hideDeleteModal();
+                    hideTokenModal();
+                    hideSubscribersModal();
+                    hideContactsModal();
+                });
+            });
             
             // 更新Token按钮点击事件
             updateTokenBtn.addEventListener('click', showTokenModal);
@@ -1022,6 +1298,12 @@
             
             // 取消Token更新按钮点击事件
             cancelToken.addEventListener('click', hideTokenModal);
+            
+            // 关闭订阅者模态框按钮点击事件
+            closeSubscribers.addEventListener('click', hideSubscribersModal);
+            
+            // 关闭联系消息模态框按钮点击事件
+            closeContacts.addEventListener('click', hideContactsModal);
             
             // 暗色模式切换
             const themeToggle = document.getElementById('theme-toggle');
