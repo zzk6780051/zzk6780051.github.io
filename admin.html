@@ -312,6 +312,7 @@
         .editor-header {
             text-align: center;
             margin-bottom: 2rem;
+            color: var(--primary);
         }
 
         /* 模态框 */
@@ -658,6 +659,32 @@
 
         // 当前选中的文章ID（用于编辑和删除）
         let currentPostId = null;
+
+        // 修复btoa()函数对UTF-8字符的支持
+        function utf8ToBase64(str) {
+            try {
+                // 方法1: 使用encodeURIComponent + btoa
+                return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+                    return String.fromCharCode('0x' + p1);
+                }));
+            } catch (e) {
+                try {
+                    // 方法2: 使用TextEncoder
+                    const encoder = new TextEncoder();
+                    const bytes = encoder.encode(str);
+                    let binary = '';
+                    const len = bytes.byteLength;
+                    for (let i = 0; i < len; i++) {
+                        binary += String.fromCharCode(bytes[i]);
+                    }
+                    return btoa(binary);
+                } catch (e) {
+                    // 方法3: 如果以上方法都失败，使用简单的btoa
+                    console.warn('UTF-8编码失败，使用标准btoa，可能丢失特殊字符:', e);
+                    return btoa(str);
+                }
+            }
+        }
 
         // 检查登录状态
         function checkLoginStatus() {
