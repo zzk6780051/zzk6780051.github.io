@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章列表 | 我的云博客</title>
+    <meta name="description" content="浏览所有文章">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=PT+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/articles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <i class="fas fa-blog"></i>
+                    <span>云博客</span>
+                </a>
+                
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="articles.html" class="active">文章</a></li>
+                    <li><a href="categories.html">分类</a></li>
+                    <li><a href="about.html">关于</a></li>
+                    <li><a href="contact.html">联系</a></li>
+                </ul>
+                
+                <div class="nav-actions">
+                    <button class="theme-toggle" id="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="articles-header">
+        <div class="container">
+            <h1>所有文章</h1>
+            <p>探索所有精彩内容</p>
+        </div>
+    </section>
+
+    <section class="articles-list">
+        <div class="container">
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label for="category-filter">分类:</label>
+                    <select id="category-filter">
+                        <option value="all">全部</option>
+                        <option value="technology">技术</option>
+                        <option value="design">设计</option>
+                        <option value="travel">旅行</option>
+                        <option value="photography">摄影</option>
+                        <option value="life">生活</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="sort-filter">排序:</label>
+                    <select id="sort-filter">
+                        <option value="newest">最新</option>
+                        <option value="oldest">最旧</option>
+                        <option value="popular">最受欢迎</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="articles-grid" id="articlesContainer">
+                <div class="loader"></div>
+            </div>
+
+            <div class="pagination" id="pagination">
+                <!-- 分页控件 -->
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <!-- 页脚（与首页相同） -->
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/common.js"></script>
+    <script src="js/articles.js"></script>
+</body>
+</html>

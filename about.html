@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我 | 我的云博客</title>
+    <meta name="description" content="关于我和这个博客的故事">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=PT+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/about.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <i class="fas fa-blog"></i>
+                    <span>云博客</span>
+                </a>
+                
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="articles.html">文章</a></li>
+                    <li><a href="categories.html">分类</a></li>
+                    <li><a href="about.html" class="active">关于</a></li>
+                    <li><a href="contact.html">联系</a></li>
+                </ul>
+                
+                <div class="nav-actions">
+                    <button class="theme-toggle" id="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="about-header">
+        <div class="container">
+            <h1>关于我</h1>
+            <p>这是我的故事</p>
+        </div>
+    </section>
+
+    <section class="about-content">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" alt="关于我">
+                </div>
+                <div class="about-text">
+                    <h2>你好，我是云博客的作者</h2>
+                    <p>我是一名热爱技术和写作的开发者。这个博客是我分享知识、经验和生活感悟的地方。</p>
+                    <p>我相信技术可以改变世界，而分享知识可以让世界变得更美好。在这里，我主要分享Web开发、设计、旅行摄影以及生活方面的内容。</p>
+                    <p>这个博客使用GitHub进行版本控制，通过Cloudflare Pages部署，并利用Cloudflare Workers提供动态功能。</p>
+                    
+                    <div class="skills">
+                        <h3>我的技能</h3>
+                        <div class="skill-item">
+                            <span class="skill-name">前端开发</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-width="90%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-name">UI/UX设计</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-width="80%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-name">摄影</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-width="75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="timeline-section">
+        <div class="container">
+            <h2 class="section-title">我的<span>经历</span></h2>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">2021 - 现在</div>
+                    <div class="timeline-content">
+                        <h3>全栈开发者</h3>
+                        <p>某科技公司</p>
+                        <p>负责前端和后端开发工作，参与多个重要项目。</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2019 - 2021</div>
+                    <div class="timeline-content">
+                        <h3>前端工程师</h3>
+                        <p>某互联网公司</p>
+                        <p>专注于React和Vue.js开发，参与产品设计和优化。</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2017 - 2019</div>
+                    <div class="timeline-content">
+                        <h3>UI设计师</h3>
+                        <p>某设计工作室</p>
+                        <p>负责网站和移动应用的界面设计。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <!-- 页脚（与首页相同） -->
+    </footer>
+
+    <script src="js/common.js"></script>
+    <script src="js/about.js"></script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分类 | 我的云博客</title>
+    <meta name="description" content="按分类浏览文章">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=PT+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/categories.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <i class="fas fa-blog"></i>
+                    <span>云博客</span>
+                </a>
+                
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="articles.html">文章</a></li>
+                    <li><a href="categories.html" class="active">分类</a></li>
+                    <li><a href="about.html">关于</a></li>
+                    <li><a href="contact.html">联系</a></li>
+                </ul>
+                
+                <div class="nav-actions">
+                    <button class="theme-toggle" id="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="categories-header">
+        <div class="container">
+            <h1>文章分类</h1>
+            <p>按主题浏览文章</p>
+        </div>
+    </section>
+
+    <section class="categories-list">
+        <div class="container">
+            <div class="categories-grid">
+                <a href="#technology" class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>技术</h3>
+                    <p>编程、开发和科技相关文章</p>
+                    <span class="post-count">15 篇文章</span>
+                </a>
+
+                <a href="#design" class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-paint-brush"></i>
+                    </div>
+                    <h3>设计</h3>
+                    <p>UI/UX 设计和创意相关文章</p>
+                    <span class="post-count">8 篇文章</span>
+                </a>
+
+                <a href="#travel" class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-plane"></i>
+                    </div>
+                    <h3>旅行</h3>
+                    <p>旅行见闻和攻略</p>
+                    <span class="post-count">12 篇文章</span>
+                </a>
+
+                <a href="#photography" class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h3>摄影</h3>
+                    <p>摄影技巧和作品分享</p>
+                    <span class="post-count">10 篇文章</span>
+                </a>
+
+                <a href="#life" class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>生活</h3>
+                    <p>日常生活和感悟</p>
+                    <span class="post-count">20 篇文章</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="category-posts" id="categoryPosts">
+        <!-- 点击分类后显示的文章列表 -->
+    </section>
+
+    <footer>
+        <!-- 页脚（与首页相同） -->
+    </footer>
+
+    <script src="js/common.js"></script>
+    <script src="js/categories.js"></script>
+</body>
+</html>
