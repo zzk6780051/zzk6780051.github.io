@@ -379,6 +379,24 @@
             background: var(--error);
         }
 
+        /* GitHub Token 设置 */
+        .github-settings {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px var(--shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass);
+            margin-bottom: 2rem;
+        }
+
+        .github-settings h3 {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
         /* 响应式设计 */
         @media (max-width: 768px) {
             .nav-links {
@@ -408,6 +426,10 @@
             }
             
             .admin-actions {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
                 flex-direction: column;
             }
         }
@@ -456,6 +478,11 @@
                     <label for="password">密码</label>
                     <input type="password" id="password" class="form-control" placeholder="请输入密码">
                 </div>
+                <div class="form-group">
+                    <label for="githubToken">GitHub Token (可选)</label>
+                    <input type="password" id="githubToken" class="form-control" placeholder="请输入GitHub Personal Access Token">
+                    <small style="color: var(--text-light); font-size: 0.8rem;">用于直接操作GitHub仓库，如果不提供，将使用Worker的默认配置</small>
+                </div>
                 <button id="loginBtn" class="btn btn-primary" style="width: 100%;">登录</button>
             </div>
         </div>
@@ -467,9 +494,25 @@
                 <p>发布、编辑和删除文章</p>
             </div>
 
+            <!-- GitHub Token 设置 -->
+            <div class="github-settings">
+                <h3><i class="fab fa-github"></i> GitHub 设置</h3>
+                <div class="form-group">
+                    <label for="currentGithubToken">当前GitHub Token</label>
+                    <input type="password" id="currentGithubToken" class="form-control" readonly>
+                    <small style="color: var(--text-light); font-size: 0.8rem;">在登录时设置的GitHub Token</small>
+                </div>
+                <button id="updateTokenBtn" class="btn btn-secondary">
+                    <i class="fas fa-sync-alt"></i> 更新Token
+                </button>
+            </div>
+
             <div class="admin-actions">
                 <button id="newPostBtn" class="btn btn-primary">
                     <i class="fas fa-plus"></i> 发布新文章
+                </button>
+                <button id="refreshBtn" class="btn btn-secondary">
+                    <i class="fas fa-sync-alt"></i> 刷新文章
                 </button>
                 <button id="logoutBtn" class="btn btn-secondary">
                     <i class="fas fa-sign-out-alt"></i> 退出登录
@@ -539,6 +582,12 @@
                 </thead>
                 <tbody id="postsList">
                     <!-- 文章列表将通过JavaScript动态生成 -->
+                    <tr>
+                        <td colspan="5" style="text-align: center;">
+                            <div class="loader"></div>
+                            <p>加载中...</p>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -559,11 +608,30 @@
         </div>
     </div>
 
+    <!-- Token 更新模态框 -->
+    <div id="tokenModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>更新 GitHub Token</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="newGithubToken">新的GitHub Token</label>
+                <input type="password" id="newGithubToken" class="form-control" placeholder="请输入新的GitHub Token">
+                <small style="color: var(--text-light); font-size: 0.8rem;">留空将清除当前Token</small>
+            </div>
+            <div class="form-group" style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                <button id="saveToken" class="btn btn-primary">保存</button>
+                <button id="cancelToken" class="btn btn-secondary">取消</button>
+            </div>
+        </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <script>
         // 配置
-        const API_BASE_URL = 'https://your-worker.your-subdomain.workers.dev'; // 替换为您的Worker地址
+        const API_BASE_URL = 'https://blog.china-zzk.workers.dev';
 
         // DOM元素
         const loginSection = document.getElementById('loginSection');
@@ -573,6 +641,7 @@
         const postForm = document.getElementById('postForm');
         const editorTitle = document.getElementById('editorTitle');
         const newPostBtn = document.getElementById('newPostBtn');
+        const refreshBtn = document.getElementById('refreshBtn');
         const cancelEdit = document.getElementById('cancelEdit');
         const loginBtn = document.getElementById('loginBtn');
         const logoutBtn = document.getElementById('logoutBtn');
@@ -580,6 +649,12 @@
         const confirmDelete = document.getElementById('confirmDelete');
         const cancelDelete = document.getElementById('cancelDelete');
         const modalClose = document.querySelector('.modal-close');
+        const updateTokenBtn = document.getElementById('updateTokenBtn');
+        const currentGithubToken = document.getElementById('currentGithubToken');
+        const tokenModal = document.getElementById('tokenModal');
+        const saveToken = document.getElementById('saveToken');
+        const cancelToken = document.getElementById('cancelToken');
+        const newGithubToken = document.getElementById('newGithubToken');
 
         // 当前选中的文章ID（用于编辑和删除）
         let currentPostId = null;
@@ -606,6 +681,10 @@
         function showAdminPanel() {
             loginSection.style.display = 'none';
             adminPanel.style.display = 'block';
+            
+            // 显示当前GitHub Token
+            const token = localStorage.getItem('githubToken');
+            currentGithubToken.value = token ? '••••••••••••••••' : '未设置';
         }
 
         // 显示文章编辑器
@@ -636,7 +715,23 @@
         // 加载文章列表
         async function loadPosts() {
             try {
-                const response = await fetch(`${API_BASE_URL}/posts`);
+                const token = localStorage.getItem('githubToken');
+                const headers = {};
+                
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
+                postsList.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center;">
+                            <div class="loader"></div>
+                            <p>加载中...</p>
+                        </td>
+                    </tr>
+                `;
+                
+                const response = await fetch(`${API_BASE_URL}/posts`, { headers });
                 
                 if (!response.ok) {
                     throw new Error('获取文章失败');
@@ -654,7 +749,7 @@
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${post.title}</td>
-                        <td><span class="post-tag">${post.category}</span></td>
+                        <td><span style="background: var(--primary); color: white; padding: 0.2rem 0.8rem; border-radius: 50px; font-size: 0.8rem;">${post.category}</span></td>
                         <td>${post.author}</td>
                         <td>${post.date}</td>
                         <td>
@@ -687,13 +782,13 @@
                 });
             } catch (error) {
                 console.error('加载文章失败:', error);
-                postsList.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--error);">加载文章失败，请检查网络连接</td></tr>';
+                postsList.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--error);">加载文章失败，请检查网络连接和GitHub Token</td></tr>';
             }
         }
 
         // 编辑文章
         function editPost(postId, posts) {
-            const post = posts.find(p => p.id === postId);
+            const post = posts.find(p => p.id.toString() === postId.toString());
             if (post) {
                 currentPostId = postId;
                 showPostEditor(true, post);
@@ -712,11 +807,30 @@
             currentPostId = null;
         }
 
+        // 显示Token更新模态框
+        function showTokenModal() {
+            tokenModal.style.display = 'flex';
+            newGithubToken.value = localStorage.getItem('githubToken') || '';
+        }
+
+        // 隐藏Token更新模态框
+        function hideTokenModal() {
+            tokenModal.style.display = 'none';
+        }
+
         // 删除文章
         async function deletePost(postId) {
             try {
+                const token = localStorage.getItem('githubToken');
+                const headers = {};
+                
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
                 const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers
                 });
                 
                 if (!response.ok) {
@@ -749,9 +863,14 @@
             loginBtn.addEventListener('click', () => {
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
+                const githubToken = document.getElementById('githubToken').value;
                 
                 // 简单的硬编码验证（生产环境应使用更安全的方式）
                 if (username === 'admin' && password === 'password123') {
+                    if (githubToken) {
+                        localStorage.setItem('githubToken', githubToken);
+                    }
+                    
                     localStorage.setItem('isLoggedIn', 'true');
                     showAdminPanel();
                     loadPosts();
@@ -771,6 +890,12 @@
             // 发布新文章按钮点击事件
             newPostBtn.addEventListener('click', () => {
                 showPostEditor();
+            });
+
+            // 刷新文章按钮点击事件
+            refreshBtn.addEventListener('click', () => {
+                loadPosts();
+                showToast('文章列表已刷新');
             });
 
             // 取消编辑按钮点击事件
@@ -805,14 +930,21 @@
                         readTime: `${Math.ceil(content.length / 500)}分钟阅读`
                     };
                     
+                    const token = localStorage.getItem('githubToken');
+                    const headers = {
+                        'Content-Type': 'application/json'
+                    };
+                    
+                    if (token) {
+                        headers['Authorization'] = `Bearer ${token}`;
+                    }
+                    
                     const url = postId ? `${API_BASE_URL}/posts/${postId}` : `${API_BASE_URL}/posts`;
                     const method = postId ? 'PUT' : 'POST';
                     
                     const response = await fetch(url, {
                         method,
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                        headers,
                         body: JSON.stringify(postData)
                     });
                     
@@ -843,6 +975,61 @@
             
             // 关闭模态框按钮点击事件
             modalClose.addEventListener('click', hideDeleteModal);
+            
+            // 更新Token按钮点击事件
+            updateTokenBtn.addEventListener('click', showTokenModal);
+            
+            // 保存Token按钮点击事件
+            saveToken.addEventListener('click', () => {
+                const token = newGithubToken.value;
+                if (token) {
+                    localStorage.setItem('githubToken', token);
+                    showToast('GitHub Token已更新');
+                } else {
+                    localStorage.removeItem('githubToken');
+                    showToast('GitHub Token已清除');
+                }
+                currentGithubToken.value = token ? '••••••••••••••••' : '未设置';
+                hideTokenModal();
+            });
+            
+            // 取消Token更新按钮点击事件
+            cancelToken.addEventListener('click', hideTokenModal);
+            
+            // 暗色模式切换
+            const themeToggle = document.getElementById('theme-toggle');
+            const icon = themeToggle.querySelector('i');
+            
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                
+                if (document.body.classList.contains('dark-mode')) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+            
+            // 检查本地存储中的主题偏好
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            }
+            
+            // 移动端菜单
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.getElementById('navLinks');
+            
+            if (mobileMenuBtn && navLinks) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    navLinks.classList.toggle('active');
+                });
+            }
         }
 
         // 初始化
