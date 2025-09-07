@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=PT+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --error: #ef4444;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --bg: #f9fafb;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --glass: rgba(255, 255, 255, 0.1);
+            --shadow: rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        .dark-mode {
+            --text: #f3f4f6;
+            --text-light: #d1d5db;
+            --bg: #111827;
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --glass: rgba(0, 0, 0, 0.1);
+            --shadow: rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.6;
+            transition: var(--transition);
+            background-image: 
+                radial-gradient(at 47% 33%, rgba(162, 28, 175, 0.1) 0, transparent 59%), 
+                radial-gradient(at 82% 65%, rgba(37, 99, 235, 0.1) 0, transparent 55%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* 导航栏样式 */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: var(--glass);
+            box-shadow: 0 4px 12px var(--shadow);
+            transition: var(--transition);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover:after,
+        .nav-links a.active:after {
+            width: 100%;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* 移动端菜单 */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--glass);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--glass);
+            background: var(--card-bg);
+            color: var(--text);
+            font-family: 'Noto Sans SC', sans-serif;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        /* 登录页面 */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+
+        .login-form {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px var(--shadow);
+            border: 1px solid var(--glass);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary);
+        }
+
+        /* 管理面板 */
+        .admin-header {
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .posts-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px var(--shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass);
+        }
+
+        .posts-table th,
+        .posts-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--glass);
+        }
+
+        .posts-table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+        }
+
+        .posts-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .posts-table tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* 文章编辑器 */
+        .editor-container {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px var(--shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass);
+            margin-bottom: 2rem;
+        }
+
+        .editor-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px var(--shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        /* 消息提示 */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: var(--error);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: var(--card-bg);
+                padding: 1rem;
+                box-shadow: 0 10px 25px var(--shadow);
+                backdrop-filter: blur(10px);
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .posts-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .admin-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <i class="fas fa-blog"></i>
+                    <span>云博客</span>
+                </a>
+                
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="articles.html">文章</a></li>
+                    <li><a href="categories.html">分类</a></li>
+                    <li><a href="about.html">关于</a></li>
+                    <li><a href="contact.html">联系</a></li>
+                    <li><a href="#" class="active" id="adminLink">管理</a></li>
+                </ul>
+                
+                <div class="nav-actions">
+                    <button class="theme-toggle" id="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 登录表单 -->
+        <div id="loginSection" class="login-container">
+            <div class="login-form">
+                <h2>管理员登录</h2>
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input type="text" id="username" class="form-control" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" class="form-control" placeholder="请输入密码">
+                </div>
+                <button id="loginBtn" class="btn btn-primary" style="width: 100%;">登录</button>
+            </div>
+        </div>
+
+        <!-- 管理面板 -->
+        <div id="adminPanel" style="display: none;">
+            <div class="admin-header">
+                <h1>博客管理面板</h1>
+                <p>发布、编辑和删除文章</p>
+            </div>
+
+            <div class="admin-actions">
+                <button id="newPostBtn" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> 发布新文章
+                </button>
+                <button id="logoutBtn" class="btn btn-secondary">
+                    <i class="fas fa-sign-out-alt"></i> 退出登录
+                </button>
+            </div>
+
+            <!-- 文章编辑器 -->
+            <div id="postEditor" class="editor-container" style="display: none;">
+                <div class="editor-header">
+                    <h2 id="editorTitle">发布新文章</h2>
+                </div>
+                <form id="postForm">
+                    <input type="hidden" id="postId">
+                    <div class="form-group">
+                        <label for="postTitle">文章标题</label>
+                        <input type="text" id="postTitle" class="form-control" placeholder="请输入文章标题" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postExcerpt">文章摘要</label>
+                        <textarea id="postExcerpt" class="form-control" placeholder="请输入文章摘要" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="postContent">文章内容</label>
+                        <textarea id="postContent" class="form-control" placeholder="请输入文章内容" rows="10" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="postCategory">文章分类</label>
+                        <select id="postCategory" class="form-control" required>
+                            <option value="">请选择分类</option>
+                            <option value="技术">技术</option>
+                            <option value="设计">设计</option>
+                            <option value="旅行">旅行</option>
+                            <option value="摄影">摄影</option>
+                            <option value="生活">生活</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="postImage">文章图片URL</label>
+                        <input type="url" id="postImage" class="form-control" placeholder="请输入文章图片URL">
+                    </div>
+                    <div class="form-group">
+                        <label for="postAuthor">作者</label>
+                        <input type="text" id="postAuthor" class="form-control" placeholder="请输入作者名称" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postAuthorAvatar">作者头像URL</label>
+                        <input type="url" id="postAuthorAvatar" class="form-control" placeholder="请输入作者头像URL">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">保存文章</button>
+                        <button type="button" id="cancelEdit" class="btn btn-secondary">取消</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 文章列表 -->
+            <h3>文章管理</h3>
+            <table class="posts-table">
+                <thead>
+                    <tr>
+                        <th>标题</th>
+                        <th>分类</th>
+                        <th>作者</th>
+                        <th>发布日期</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="postsList">
+                    <!-- 文章列表将通过JavaScript动态生成 -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- 删除确认模态框 -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>确认删除</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <p>您确定要删除这篇文章吗？此操作不可撤销。</p>
+            <div class="form-group" style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                <button id="confirmDelete" class="btn btn-danger">确认删除</button>
+                <button id="cancelDelete" class="btn btn-secondary">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 配置
+        const API_BASE_URL = 'https://your-worker.your-subdomain.workers.dev'; // 替换为您的Worker地址
+
+        // DOM元素
+        const loginSection = document.getElementById('loginSection');
+        const adminPanel = document.getElementById('adminPanel');
+        const postEditor = document.getElementById('postEditor');
+        const postsList = document.getElementById('postsList');
+        const postForm = document.getElementById('postForm');
+        const editorTitle = document.getElementById('editorTitle');
+        const newPostBtn = document.getElementById('newPostBtn');
+        const cancelEdit = document.getElementById('cancelEdit');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const deleteModal = document.getElementById('deleteModal');
+        const confirmDelete = document.getElementById('confirmDelete');
+        const cancelDelete = document.getElementById('cancelDelete');
+        const modalClose = document.querySelector('.modal-close');
+
+        // 当前选中的文章ID（用于编辑和删除）
+        let currentPostId = null;
+
+        // 检查登录状态
+        function checkLoginStatus() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                showAdminPanel();
+                loadPosts();
+            } else {
+                showLoginForm();
+            }
+        }
+
+        // 显示登录表单
+        function showLoginForm() {
+            loginSection.style.display = 'flex';
+            adminPanel.style.display = 'none';
+            postEditor.style.display = 'none';
+        }
+
+        // 显示管理面板
+        function showAdminPanel() {
+            loginSection.style.display = 'none';
+            adminPanel.style.display = 'block';
+        }
+
+        // 显示文章编辑器
+        function showPostEditor(isEdit = false, postData = null) {
+            postEditor.style.display = 'block';
+            if (isEdit && postData) {
+                editorTitle.textContent = '编辑文章';
+                document.getElementById('postId').value = postData.id;
+                document.getElementById('postTitle').value = postData.title;
+                document.getElementById('postExcerpt').value = postData.excerpt;
+                document.getElementById('postContent').value = postData.content;
+                document.getElementById('postCategory').value = postData.category;
+                document.getElementById('postImage').value = postData.image;
+                document.getElementById('postAuthor').value = postData.author;
+                document.getElementById('postAuthorAvatar').value = postData.authorAvatar;
+            } else {
+                editorTitle.textContent = '发布新文章';
+                postForm.reset();
+                document.getElementById('postId').value = '';
+            }
+        }
+
+        // 隐藏文章编辑器
+        function hidePostEditor() {
+            postEditor.style.display = 'none';
+        }
+
+        // 加载文章列表
+        async function loadPosts() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/posts`);
+                
+                if (!response.ok) {
+                    throw new Error('获取文章失败');
+                }
+                
+                const posts = await response.json();
+                postsList.innerHTML = '';
+
+                if (posts.length === 0) {
+                    postsList.innerHTML = '<tr><td colspan="5" style="text-align: center;">暂无文章</td></tr>';
+                    return;
+                }
+
+                posts.forEach(post => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${post.title}</td>
+                        <td><span class="post-tag">${post.category}</span></td>
+                        <td>${post.author}</td>
+                        <td>${post.date}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-secondary edit-post" data-id="${post.id}">
+                                    <i class="fas fa-edit"></i> 编辑
+                                </button>
+                                <button class="btn btn-danger delete-post" data-id="${post.id}">
+                                    <i class="fas fa-trash"></i> 删除
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    postsList.appendChild(tr);
+                });
+
+                // 添加编辑和删除事件监听器
+                document.querySelectorAll('.edit-post').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const postId = e.target.closest('.edit-post').dataset.id;
+                        editPost(postId, posts);
+                    });
+                });
+
+                document.querySelectorAll('.delete-post').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const postId = e.target.closest('.delete-post').dataset.id;
+                        showDeleteModal(postId);
+                    });
+                });
+            } catch (error) {
+                console.error('加载文章失败:', error);
+                postsList.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--error);">加载文章失败，请检查网络连接</td></tr>';
+            }
+        }
+
+        // 编辑文章
+        function editPost(postId, posts) {
+            const post = posts.find(p => p.id === postId);
+            if (post) {
+                currentPostId = postId;
+                showPostEditor(true, post);
+            }
+        }
+
+        // 显示删除确认模态框
+        function showDeleteModal(postId) {
+            currentPostId = postId;
+            deleteModal.style.display = 'flex';
+        }
+
+        // 隐藏删除确认模态框
+        function hideDeleteModal() {
+            deleteModal.style.display = 'none';
+            currentPostId = null;
+        }
+
+        // 删除文章
+        async function deletePost(postId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || '删除失败');
+                }
+                
+                await loadPosts();
+                showToast('文章已成功删除');
+            } catch (error) {
+                console.error('删除文章失败:', error);
+                showToast(`删除失败: ${error.message}`, true);
+            }
+        }
+
+        // 显示消息提示
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = isError ? 'toast error show' : 'toast show';
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 初始化事件监听器
+        function initEventListeners() {
+            // 登录按钮点击事件
+            loginBtn.addEventListener('click', () => {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                // 简单的硬编码验证（生产环境应使用更安全的方式）
+                if (username === 'admin' && password === 'password123') {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    showAdminPanel();
+                    loadPosts();
+                    showToast('登录成功');
+                } else {
+                    showToast('用户名或密码错误', true);
+                }
+            });
+
+            // 退出登录按钮点击事件
+            logoutBtn.addEventListener('click', () => {
+                localStorage.setItem('isLoggedIn', 'false');
+                showLoginForm();
+                showToast('已退出登录');
+            });
+
+            // 发布新文章按钮点击事件
+            newPostBtn.addEventListener('click', () => {
+                showPostEditor();
+            });
+
+            // 取消编辑按钮点击事件
+            cancelEdit.addEventListener('click', () => {
+                hidePostEditor();
+            });
+
+            // 文章表单提交事件
+            postForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const postId = document.getElementById('postId').value;
+                const title = document.getElementById('postTitle').value;
+                const excerpt = document.getElementById('postExcerpt').value;
+                const content = document.getElementById('postContent').value;
+                const category = document.getElementById('postCategory').value;
+                const image = document.getElementById('postImage').value;
+                const author = document.getElementById('postAuthor').value;
+                const authorAvatar = document.getElementById('postAuthorAvatar').value;
+                
+                try {
+                    const postData = {
+                        id: postId || Date.now().toString(),
+                        title,
+                        excerpt,
+                        content,
+                        category,
+                        image: image || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+                        author,
+                        authorAvatar: authorAvatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1160&q=80',
+                        date: new Date().toLocaleDateString('zh-CN'),
+                        readTime: `${Math.ceil(content.length / 500)}分钟阅读`
+                    };
+                    
+                    const url = postId ? `${API_BASE_URL}/posts/${postId}` : `${API_BASE_URL}/posts`;
+                    const method = postId ? 'PUT' : 'POST';
+                    
+                    const response = await fetch(url, {
+                        method,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(postData)
+                    });
+                    
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.error || '保存失败');
+                    }
+                    
+                    hidePostEditor();
+                    await loadPosts();
+                    showToast(postId ? '文章已更新' : '文章已发布');
+                } catch (error) {
+                    console.error('保存文章失败:', error);
+                    showToast(`保存失败: ${error.message}`, true);
+                }
+            });
+
+            // 确认删除按钮点击事件
+            confirmDelete.addEventListener('click', async () => {
+                if (currentPostId) {
+                    await deletePost(currentPostId);
+                    hideDeleteModal();
+                }
+            });
+
+            // 取消删除按钮点击事件
+            cancelDelete.addEventListener('click', hideDeleteModal);
+            
+            // 关闭模态框按钮点击事件
+            modalClose.addEventListener('click', hideDeleteModal);
+        }
+
+        // 初始化
+        function init() {
+            checkLoginStatus();
+            initEventListeners();
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
